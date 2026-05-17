@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "UYAP Toplu Evrak İndirici",
-  "short_name": "UYAP Toplu İndir",
-  "version": "2.0.0",
-  "description": "UYAP Avukat Portal'da açık olan dosyadaki tüm evrakları toplu olarak indirir. UDF/PDF, ZIP arşivi, Excel listesi, filtreler, çoklu dosya kuyruğu, evrak seçim modu ve daha fazlası.",
+  "name": "Uyap+ — Toplu Evrak İndirici",
+  "short_name": "Uyap+",
+  "version": "2.1.0",
+  "description": "UYAP Avukat Portal için modern toplu evrak indirici. UDF/PDF, ZIP arşivi, Excel listesi, filtreler, çoklu dosya kuyruğu, seçim modu ve daha fazlası.",
   "host_permissions": [
     "https://avukat.uyap.gov.tr/*"
   ],
   "action": {
-    "default_title": "UYAP Toplu Evrak İndirici (sayfadaki yüzen butonu kullan)"
+    "default_title": "Uyap+ (sayfadaki yüzen butonu kullan)"
   },
   "content_scripts": [
     {

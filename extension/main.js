@@ -32,15 +32,52 @@
   #uyap-bulk-root *::before, #uyap-bulk-root *::after { box-sizing: border-box; }
 
   .uyap-bulk-fab {
-    position: fixed; left: 18px; bottom: 18px; z-index: 2147483646;
-    display: inline-flex; align-items: center; gap: 8px;
-    background: ${C.primary}; color: #fff; border: 0; border-radius: 999px;
-    padding: 11px 18px; font: 600 14px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22); cursor: pointer;
-    transition: transform .15s ease, background .15s ease; user-select: none;
+    position: fixed; left: 20px; bottom: 20px; z-index: 2147483646;
+    display: inline-flex; align-items: center; gap: 9px;
+    background: linear-gradient(135deg, #0b3d91 0%, #1e88e5 55%, #42a5f5 100%);
+    background-size: 200% 200%; background-position: 0% 0%;
+    color: #fff; border: 0; border-radius: 14px;
+    padding: 10px 16px 10px 12px;
+    font: 700 14px/1 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    letter-spacing: .3px;
+    box-shadow:
+      0 4px 14px rgba(11, 61, 145, 0.30),
+      0 2px 4px rgba(11, 61, 145, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    cursor: pointer; user-select: none; opacity: 0.5;
+    transition: opacity .22s ease, transform .22s cubic-bezier(.34, 1.56, .64, 1),
+                box-shadow .22s ease, background-position .35s ease;
+    backdrop-filter: saturate(140%);
   }
-  .uyap-bulk-fab:hover { transform: translateY(-2px); background: ${C.primaryHover}; }
-  .uyap-bulk-fab svg { width: 18px; height: 18px; fill: currentColor; }
+  .uyap-bulk-fab:hover {
+    opacity: 1; transform: translateY(-3px) scale(1.03);
+    background-position: 100% 100%;
+    box-shadow:
+      0 10px 28px rgba(11, 61, 145, 0.42),
+      0 4px 10px rgba(11, 61, 145, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.30);
+  }
+  .uyap-bulk-fab:active { transform: translateY(-1px) scale(0.98); }
+  .uyap-bulk-fab.open { opacity: 1; }
+  .uyap-bulk-fab .uyap-bulk-fab-icon {
+    width: 26px; height: 26px; border-radius: 8px;
+    background: rgba(255, 255, 255, 0.16);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex: none; transition: background .2s ease, transform .25s ease;
+  }
+  .uyap-bulk-fab:hover .uyap-bulk-fab-icon {
+    background: rgba(255, 255, 255, 0.26); transform: rotate(-6deg);
+  }
+  .uyap-bulk-fab svg { width: 16px; height: 16px; fill: currentColor; }
+  .uyap-bulk-fab .uyap-bulk-fab-plus {
+    color: #ffd54f; font-weight: 800; font-size: 16px;
+    margin-left: -2px; text-shadow: 0 0 8px rgba(255, 213, 79, 0.4);
+  }
+  @keyframes uyap-bulk-pulse {
+    0%, 100% { box-shadow: 0 4px 14px rgba(11,61,145,0.30), 0 0 0 0 rgba(30,136,229,0.55); }
+    50%      { box-shadow: 0 4px 14px rgba(11,61,145,0.30), 0 0 0 10px rgba(30,136,229,0); }
+  }
+  .uyap-bulk-fab.attention { animation: uyap-bulk-pulse 1.8s ease-in-out infinite; }
 
   .uyap-bulk-panel {
     position: fixed; left: 18px; bottom: 76px; z-index: 2147483647;
@@ -60,6 +97,12 @@
     display: flex; align-items: center; justify-content: space-between;
   }
   .uyap-bulk-header h3 { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .2px; }
+  .uyap-bulk-header .brand { font-weight: 800; }
+  .uyap-bulk-header .brand-plus {
+    color: #ffd54f; font-weight: 800;
+    text-shadow: 0 0 8px rgba(255, 213, 79, 0.45); margin-right: 2px;
+  }
+  .uyap-bulk-header .brand-sub { font-weight: 500; opacity: .85; }
   .uyap-bulk-header .sub { display: block; font-size: 11px; font-weight: 500; opacity: .85; margin-top: 2px; }
   .uyap-bulk-close {
     background: rgba(255, 255, 255, .15); border: 0; color: #fff; cursor: pointer;
@@ -336,14 +379,20 @@
     if (document.getElementById('uyap-bulk-root')) return;
 
     /* ---- FAB ---- */
-    const fab = el('button', { class: 'uyap-bulk-fab', title: 'UYAP Toplu Evrak İndirici',
-      html: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14v-2H5zM19 9h-4V3H9v6H5l7 7z"/></svg><span>Toplu İndir</span>` });
+    const fab = el('button', { class: 'uyap-bulk-fab', title: 'Uyap+ — Toplu Evrak İndirici',
+      html:
+        `<span class="uyap-bulk-fab-icon"><svg viewBox="0 0 24 24" aria-hidden="true">
+           <path d="M12 3v10.55l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zm-7 16h14v2H5v-2z"/>
+         </svg></span>
+         <span>Uyap<span class="uyap-bulk-fab-plus">+</span></span>` });
 
     const panel = el('div', { class: 'uyap-bulk-panel', hidden: true });
 
     /* ---- Header ---- */
     const header = el('div', { class: 'uyap-bulk-header' },
-      el('div', {}, el('h3', {}, 'UYAP Toplu Evrak İndirici'),
+      el('div', {},
+        el('h3', {}, el('span', { class: 'brand' }, 'Uyap'), el('span', { class: 'brand-plus' }, '+'),
+          el('span', { class: 'brand-sub' }, ' Toplu Evrak İndirici')),
         el('span', { class: 'sub' }, 'v2.0 — filtreler, ZIP, çoklu dosya')),
       el('button', { class: 'uyap-bulk-close', title: 'Kapat' }, '×')
     );
@@ -506,12 +555,16 @@
 
     UI.panel = panel; UI.fab = fab;
 
+    const syncFabState = () => {
+      fab.classList.toggle('open', !panel.hidden);
+    };
     fab.addEventListener('click', () => {
       panel.hidden = !panel.hidden;
+      syncFabState();
       if (!panel.hidden && !state.scanned.length) onScan();
     });
     header.querySelector('.uyap-bulk-close')
-      .addEventListener('click', () => { panel.hidden = true; });
+      .addEventListener('click', () => { panel.hidden = true; syncFabState(); });
 
     // Filtre değişikliklerini canlı yansıt
     [UI.useDateFilter, UI.dateFrom, UI.dateTo,
