@@ -1,190 +1,183 @@
 # Uyap Flow — Toplu Evrak İndirici
 
-**Uyap Flow**, UYAP Avukat Portal'da bir dosyadaki **tüm evrakları toplu olarak** indiren bir tarayıcı eklentisidir. Chromium tabanlı tarayıcılar (Chrome, Edge, Brave, Opera) ile uyumludur.
+**Güncel sürüm: 2.3.7** · `extension/manifest.json` içindeki `version` alanı esas alınır.
 
-## Özellikler — v2.0 ile Eklenenler
+**Uyap Flow**, UYAP Avukat Portal’da bir dosyadaki evrakları **toplu** indirmenizi, filtrelemenizi ve düzenli klasörlere kaydetmenizi sağlayan bir tarayıcı eklentisidir. Chromium tabanlı tarayıcılar (Chrome, Edge, Brave, Opera) ile uyumludur.
 
-### Temel İndirme
-- **UDF / PDF formatı seçimi** — PDF modu, UYAP'ın önizleyici servisinin sunduğu PDF'i birebir yakalar (kalite kaybı yok).
-- **Anlamlı dosya isimleri** — `2026-05-07_Duruşma-Zaptı_3.Celse_9690.pdf` gibi okunabilir formatta.
-- **Otomatik alt klasör yapısı** — Tüm dosyalar `Dosya_2025-849_İstanbul-Anadolu-37/` gibi otomatik klasörlerde toplanır.
-- **Tek ZIP arşivi** — Tüm evrakları tek bir ZIP dosyasında topla, kolay paylaş.
+> **Resmi ürün değildir** — UYAP ile bağlantılı veya onaylı bir kurum yazılımı değildir; portal arayüzüne eklenen yardımcı bir eklentidir.
 
-### Filtreler (Opsiyonel)
-Hiçbir filtre seçilmezse **tüm evraklar** indirilir. Opsiyonel olarak:
-- **Evrak seçim modu** — Tarama sonrası liste açılır, checkbox ile istediklerini seçersin.
-- **Tarih aralığı filtresi** — Sadece belirli tarih aralığındaki evraklar.
-- **Tür filtresi** — Sadece "Duruşma Zaptı" + "Kararlar" gibi seçili türler.
-- **Anahtar kelime filtresi** — Adında/açıklamasında belirli kelime geçenler (örn. "bilirkişi").
-- **Sadece yeni evraklar** — Önceki indirmeden sonraki evraklar (her dosya için son indirme zamanı hatırlanır).
+---
 
-### Önizleme
-- **Önizleme paneli** — Tarama sonrası tüm evraklar listede görünür; üzerine tıklayarak UYAP'ta önizleyebilirsin. Filtreler uygulandığında dışarıda kalanlar sönükleştirilir.
+## Tüm özellikler (güncel)
 
-### Çoklu Dosya
-- **Çoklu dosya kuyruğu** — Birden fazla dosyayı sıraya al, otomatik olarak her birinin evraklarını sırayla indir. İki yöntem:
-  - Açık olan dosyayı tek tıkla kuyruğa ekle.
-  - "Dosya Sorgula" sayfasındaki tüm sonuçları toplu olarak kuyruğa ekle.
+### İndirme ve format
+- **UDF ve PDF modu** — UDF: orijinal evrak; PDF: önizleyicide üretilen PDF’in yakalanması (birebir kalite).
+- **Tek tek indirme veya ZIP arşivi** — Tüm evrakları tek `.zip` içinde toplama (JSZip).
+- **Tek birleşik PDF** — PDF modunda, seçili/filtrelenmiş evrakları tek PDF’te birleştirme (pdf-lib). ZIP ile birlikte de kullanılabilir (ikisi birden üretilebilir).
+- **Anlamlı dosya adları** — Tarih, tür, açıklama, birim evrak no vb. ile otomatik isimlendirme.
+- **Özel dosya adı şablonu** — `{tarih}`, `{tur}`, `{aciklama}`, `{birim}`, `{sira}`, `{gonderen}`, `{tip}` yer tutucuları.
 
-### Çıktı ve Raporlama
-- **Excel/CSV evrak listesi** — Tüm evrakların metadata'sını (tarih, tür, açıklama, gönderen vb.) UTF-8 BOM'lu CSV olarak çıkar. Excel'de direkt açılır.
-- **Detaylı log export** — Tüm indirme oturumunun log'unu zaman damgalı `.txt` olarak indir.
+### Klasör yapısı
+- **Otomatik üst klasör** — Dosya esası ve mahkeme bilgisinden indirme kökü (ör. `2026-299_MahkemeAdı/`).
+- **Türe göre kategorize** — Açıkken önce UYAP sol **ağaçtaki** klasör yolunu yansıtır (ör. Tebligatlar / alt klasör). Ağaçtan okunamazsa **numaralı tür klasörleri** (`01_Durusma_Zaptlari` vb.) kullanılır.
+- **ZIP / indirme yolu** — Alt klasörler indirme veya arşiv içi yolda korunur.
 
-### Bildirim ve İzleme
-- **Tarayıcı bildirimi** — İşlem tamamlandığında masaüstü bildirimi.
-- **Tarayıcı başlığında ilerleme** — Sekme başlığı `[25%] PDF yakalanıyor [12/50] — Uyap Flow` gibi güncellenir; başka sekmedeyken bile durumu görebilirsin.
+### Tarama ve liste
+- **Tara** — Evrak listesini okur; isteğe bağlı **ek-evrakları otomatik aç** (ağaç genişletme).
+- **Tekilleştirme** — Aynı evrakın listede birden fazla satırda görünmesi (aynı birim no + tarih) tek kayda indirilir; gereksiz çift indirme azaltılır.
+- **İndirme arası bekleme (ms)** — Sunucu ve arayüz yükünü dengelemek için ayarlanabilir.
 
-### Diğer
-- Canlı log paneli (renkli, zaman damgalı).
-- İlerleme çubuğu.
-- Her indirme arası bekleme süresi ayarlanabilir.
-- Tek tek indirme yaptığı için tarayıcı "çoklu indirme izni" diyaloğunu açmaz.
+### Filtreler
+- **Tarih aralığı**, **tür** (çoklu chip), **anahtar kelime** (`Ctrl+F` benzeri içerik).
+- **Sadece yeni evraklar** — Son başarılı indirmeden sonrakiler (dosya bazında `localStorage` ile hatırlanır).
+- **Evrak seçim modu** — Önizlemede checkbox; yalnızca seçileni veya filtreyi indir.
+- **Filtreleri uygula / sıfırla**.
+
+### Önizleme ve notlar
+- **Önizleme listesi** — Tüm taranan evraklar; filtre dışı kalanlar sönük; **önizle** ile UYAP’ta açma.
+- **Not ve etiketler** — Evrak bazında not; tooltip’te özet.
+- **Tümünü seç / hiçbirini seçme** (seçim modunda).
+
+### Çıktı ve raporlama
+- **CSV / Excel listesi** — Metadata sütunları (tarih, tür, açıklama, birim no, gönderen, tip, sisteme gönderilme vb.); UTF-8 BOM.
+- **Log kaydet** — Oturum günlüğünü `.txt` olarak indir.
+- **Canlı log** ve **ilerleme çubuğu** panelde.
+
+### Arayüz ve kısayollar
+- **Yüzen buton (FAB)** — Sürüklenebilir konum; varsayılan sol alt.
+- **Panel** — Sabitleme (pin), kapatma; komut paleti ipucu.
+- **Komut paleti** — `Ctrl+K` (arama, komutlar ve taranan evrak listesine hızlı erişim).
+- **Klavye** — örn. `Ctrl+Shift+U` panel, `Ctrl+Shift+S` tara, `Ctrl+Shift+D` indir (odak uygun olduğunda).
+
+### Gelişmiş ve kuyruk
+- **Çoklu dosya kuyruğu** — Açık dosyayı veya **Dosya Sorgula** tablosundaki dosyaları sıraya ekleme; her dosyada tarama + indirme.
+- **Tarayıcı bildirimi** — İşlem bitince (izin gerekir).
+- **Sekme başlığında ilerleme** — Örn. `[25%] … — Uyap Flow`.
+
+### PTT tebligat ve metin seçimi (UYAP sayfasında)
+- Sayfada metin seçildiğinde **küçük araç çubuğu**: barkod algılanırsa **PTT’de sorgula** (yeni sekmede); ayrıca panoya kopyala, uygun metinle **UYAP Karar Arama** yeni sekme.
+- Komut paletinden **PTT’de tebligat sorgula** (barkod sorulur).
+- **`ptt-helper.js`** — `gonderitakip.ptt.gov.tr` üzerinde barkodu hash / oturum ile doldurup sorguya yardım (manifest’te ayrı içerik betiği).
+
+### PDF meta (birleşik PDF)
+- Oluşturulan birleşik PDF’te başlık, üretici bilgisi **Uyap Flow** ile işlenebilir.
+
+---
 
 ## Kurulum
 
-> Eklenti mağazada yayınlanmadığı için **Geliştirici Modu** ile yükleyeceksin. Bu, kendi eklentilerini kullanmak için tarayıcıların normal sunduğu güvenli bir yöntemdir.
+> Mağaza dışı yükleme için **Geliştirici modu** kullanılır.
 
-### Adım 1: Tarayıcıda Eklentiler sayfasını aç
+### Adım 1: Eklentiler
 - **Edge**: `edge://extensions`
 - **Chrome**: `chrome://extensions`
 - **Brave**: `brave://extensions`
 - **Opera**: `opera://extensions`
 
-### Adım 2: Geliştirici modunu aç
-Sayfanın üst veya sol alt köşesinde **"Geliştirici Modu"** anahtarını AÇ.
+### Adım 2: Geliştirici modu
+Açık konuma getir.
 
-### Adım 3: Eklentiyi yükle
-**"Paketlenmemiş yükle"** butonuna bas ve şu klasörü seç:
-
-```
-C:\Users\avemr\OneDrive\Masaüstü\UYAP Toplu Dosya İndirme\extension
-```
+### Adım 3: Paketlenmemiş yükle
+Bu depodaki **`extension`** klasörünü seç.
 
 ### Adım 4: Hazır
-Liste'de **"Uyap Flow — Toplu Evrak İndirici"** olarak görünecek.
+Listedeki ad: **Uyap Flow — Toplu Evrak İndirici**.
 
-## İlk Kullanım Öncesi Tarayıcı Ayarı (ÖNEMLİ)
+## İlk kullanım (indirme ayarı)
 
-Tarayıcının her dosya için "Kaydet" penceresi açmaması için:
+ZIP kullanmıyorsan tarayıcının her dosyada “nereye kaydedilsin” sormaması iyi olur:
 
-- **Edge**: `edge://settings/downloads` → "İndirmeden önce her dosyanın nereye kaydedileceğini sor" → **KAPAT**
-- **Chrome**: `chrome://settings/downloads` → "Ask where to save each file before downloading" → **KAPAT**
+- **Edge**: `edge://settings/downloads` → “İndirmeden önce her dosyanın nereye kaydedileceğini sor” → **Kapalı**
+- **Chrome**: `chrome://settings/downloads` → “Ask where to save each file before downloading” → **Kapalı**
 
-Bu ayarı kapatmazsan, ZIP olmayan modda her evrak için pencere açılır.
+## Kullanım özet senaryoları
 
-## Kullanım
+### Tek dosya — tüm evraklar
+1. UYAP’ta dosyayı aç → **Evrak**.
+2. Sol alttaki **Uyap Flow** butonuna tıkla.
+3. Format (UDF/PDF), ZIP / birleşik PDF / klasör seçeneklerini ayarla.
+4. **İndirmeyi Başlat**.
 
-### Senaryo 1: Bir Dosyadaki Tüm Evrakları İndirme (Varsayılan)
-1. UYAP'a giriş yap → bir dosya aç → **Evrak** sekmesi.
-2. Sol alttaki **Uyap Flow** yüzen butonuna tıkla.
-3. **"Genel Ayarlar"**'dan format seç (UDF veya PDF).
-4. (İsteğe bağlı) **"Çıktı Seçenekleri"** altında ZIP arşivi veya CSV listesi seçeneklerini ayarla.
-5. **"İndirmeyi Başlat"** butonuna bas.
+### Filtre + önizleme
+1. **Tara** → **Filtreler**’den kriterleri aç.
+2. **Önizleme**’de listeyi kontrol et → **İndirmeyi Başlat**.
 
-### Senaryo 2: Belirli Türde / Tarihte Evrakları İndirme
-1. **"Tara"** butonuna bas.
-2. **"Filtreler"** bölümünü aç.
-3. İstediğin filtreyi açıp ayarla:
-   - Tarih aralığı → tarih seç.
-   - Tür filtresi → istediğin türleri tıklayarak seç (yeşil chip).
-   - Anahtar kelime → metin yaz.
-4. **"Önizleme"** bölümünde filtrelenmiş listeyi gör.
-5. **"İndirmeyi Başlat"** butonuna bas.
+### Sadece seçilen evraklar
+1. **Tara** → **Evrak seçim modu** açık.
+2. Önizlemede işaretle → **İndirmeyi Başlat**.
 
-### Senaryo 3: Birden Fazla Dosyadan Toplu İndirme
-1. **"Dosya Sorgula"** sayfasında müvekkillerini listele.
-2. **Uyap Flow** panelini aç (sol alttaki yüzen buton).
-3. **"Gelişmiş"** → **"Çoklu dosya kuyruğu"** AÇ.
-4. **"+ Listedeki Tüm Dosyaları Ekle"** butonuna bas — tablodaki tüm dosyalar kuyruğa eklenir.
-5. **"İndirmeyi Başlat"** — eklenti her dosyayı sırayla açıp evraklarını indirir.
+### Çoklu dosya kuyruğu
+1. **Dosya Sorgula** veya açık dosya ile **Gelişmiş** → kuyruk açık.
+2. Dosyaları ekle → **İndirmeyi Başlat**.
 
-### Senaryo 4: Sadece Yeni Eklenen Evrakları Çekme
-1. Dosyayı aç.
-2. **"Filtreler"** → **"Sadece yeni evraklar"** AÇ.
-3. Panel sana son indirme tarihini gösterir.
-4. **"İndirmeyi Başlat"** — sadece son indirmeden sonraki yeni evraklar inilir.
+### Sadece yeni evraklar
+**Filtreler** → **Sadece yeni evraklar**; son indirmeden sonrakiler indirilir.
 
-### Senaryo 5: Sadece Bazı Evrakları Seçerek İndirme
-1. **"Tara"** butonuna bas.
-2. **"Filtreler"** → **"Evrak seçim modu"** AÇ.
-3. **"Önizleme"** bölümünde her satırın yanına checkbox gelir.
-4. İstediklerini seç (veya **"Tümünü Seç"** / **"Hiçbirini Seçme"** kullan).
-5. **"İndirmeyi Başlat"**.
-
-## Dosya İsimlendirme Mantığı
+## Dosya isimlendirme (özet)
 
 ```
-[OnaylandığıTarih]_[Tür]_[Açıklama]_[BirimEvrakNo].[udf|pdf]
+[OnayTarihi]_[Tür]_[Açıklama]_[BirimEvrakNo].udf|pdf
 ```
 
-Otomatik alt klasör açıksa (varsayılan):
+Üst klasör + (isteğe bağlı) kategorize alt yolu açıksa örnek:
 
 ```
-2025-849_İstanbul-Anadolu-37-Asliye/2026-05-07_Duruşma-Zaptı_3.Celse_9690.pdf
+2025-849_Mahkeme.../Tebligatlar_AltKlasor/2026-05-07_....pdf
 ```
 
-## CSV / Excel Listesi
-
-**"Çıktı Seçenekleri"** → **"CSV / Excel Listesi İndir"** butonuyla şu sütunları içeren bir tablo oluşur:
+## CSV sütunları
 
 | Sıra | Tarih | Tür | Açıklama | Birim Evrak No | Gönderen | Gönderen Dosya No | Tip | Sisteme Gönderildiği |
-|------|-------|-----|----------|----------------|----------|-------------------|-----|---------------------|
 
-UTF-8 BOM ile çıkar; Excel'de **çift tıkla aç**, Türkçe karakterler bozulmaz.
+UTF-8 BOM; Excel’de doğrudan açılabilir.
 
-## Sorun Giderme
+## Sorun giderme (kısa)
 
 | Sorun | Çözüm |
 | ----- | ----- |
-| Buton görünmüyor | Eklentinin AÇIK olduğunu kontrol et; sayfayı F5 ile yenile. |
-| "Hiç evrak bulunamadı" | Sol panelde **"Tüm Evrak"** klasörüne tıkladığından emin ol; 2-3 sn bekle ve tekrar "Tara". |
-| "URL yakalanamadı" | Bekleme süresini artır (1500-2500 ms). |
-| PDF modunda "PDF yakalanamadı" | Daha önce manuel olarak açılan evraklar önbellekten gelebilir. Sayfayı F5 ile yenile, tekrar dene. |
-| Bazı dosyalar 0 KB iniyor | Oturum sona ermiş olabilir; UYAP'a tekrar giriş yap. |
-| HTTP 403 / 401 | Oturum süresi doldu, yeniden giriş yap. |
-| ZIP indirilmiyor | Çok büyük arşiv olabilir; RAM kullanımını izle. Filtreyle veya UDF modunda dene. |
-| Çoklu dosya modunda modal açılmıyor | Dosya Sorgula sayfasında olduğundan emin ol; filtreler kullanılıyorsa "Sorgula" butonuna basıp listeyi yenile. |
-| Bildirim gelmiyor | Tarayıcı bildirim iznini ver. `edge://settings/content/notifications` adresinden kontrol et. |
+| Buton yok | Eklenti açık mı, sayfa `avukat.uyap.gov.tr` mi; F5. |
+| Evrak yok | Sol ağaçta **Tüm Evrak** vb.; birkaç saniye bekleyip **Tara**. |
+| URL yakalanamadı (UDF) | Beklemeyi artır (ms). |
+| PDF yakalanamadı | Sayfayı yenile, tekrar dene. |
+| Oturum / 401-403 | Yeniden giriş. |
+| Çoklu indirme penceresi | İndirme “nereye kaydet” ayarını kapat; veya ZIP kullan. |
+| Bildirim yok | Site bildirim izni. |
 
-## Klasör Yapısı
+## Klasör yapısı (depo)
 
 ```
-UYAP Toplu Dosya İndirme/
-├── README.md                  (bu dosya)
-└── extension/
-    ├── manifest.json          (Manifest V3)
-    ├── main.js                (UI + indirme + filtreler + ZIP + CSV + kuyruk)
-    └── lib/
-        └── jszip.min.js       (ZIP arşivleri için, JSZip v3.10.1)
+extension/
+├── manifest.json
+├── main.js                 (UYAP: UI, indirme, filtreler, palet, notlar, PTT yönlendirme)
+├── ptt-helper.js           (PTT takip sayfaları: barkod yardımı)
+└── lib/
+    ├── jszip.min.js        (ZIP)
+    └── pdf-lib.min.js      (PDF birleştirme)
 ```
 
 ## Güncelleme
 
-`main.js` veya `manifest.json` değiştirdiysen:
-1. `edge://extensions` aç.
-2. Eklentinin altındaki **🔄 Yenile** butonuna bas.
-3. UYAP sayfasını F5 ile yenile.
+`main.js`, `manifest.json` veya diğer dosyalar değiştiyse: eklentiler sayfasında **Yenile** → UYAP sekmesinde **F5**.
 
-## Güvenlik
+## Güvenlik ve veri
 
-- Eklenti sadece `https://avukat.uyap.gov.tr/*` adresinde çalışır.
-- Hiçbir veri dışarı gönderilmez; tüm işlem yerel olarak senin tarayıcında olur.
-- Çerez veya oturum bilgileri ASLA kaydedilmez/gönderilmez.
-- Yalnızca **`localStorage`** kullanılır: "Sadece yeni evraklar" özelliği için, her dosya için son indirme zaman damgası.
-- Kaynak kodu açık, `extension/main.js` ve `extension/manifest.json` dosyalarını inceleyebilirsin.
+- **UYAP** script’i yalnızca `https://avukat.uyap.gov.tr/*`.
+- **PTT yardımı** `https://gonderitakip.ptt.gov.tr/*` ve `https://*.ptt.gov.tr/*` (manifest ile uyumlu).
+- İndirme ve işlemler tarayıcıda; üçüncü taraf sunucuya özel veri gönderilmez.
+- **`localStorage`**: pin, FAB konumu, notlar, şablon, son indirme bilgisi (“sadece yeni”), komutla ilgili kalıcı tercihler olabilir.
+- Oturum çerezi tarayıcınızın normal UYAP oturumuyla aynıdır; eklenti şifre kaydetmez.
 
-## Sürüm Geçmişi
+## Sürüm notları (özet)
 
-- **v2.0.0** (2026-05-17)
-  - **Yenilenen UI**: Collapsible bölümler (Genel / Filtreler / Çıktı / Gelişmiş / Önizleme).
-  - **Önizleme paneli**: Tarama sonrası tüm evrakları listele + UYAP'ta önizle butonu.
-  - **Evrak seçim modu**: Checkbox ile istediklerini seç.
-  - **Filtreler**: Tarih, tür, anahtar kelime, "sadece yeni evraklar".
-  - **Otomatik alt klasör yapısı** (varsayılan açık).
-  - **Tek ZIP arşivi** olarak indirme.
-  - **CSV/Excel evrak listesi export**.
-  - **Çoklu dosya kuyruğu**: Birden fazla dosyayı sırayla işle.
-  - **Tarayıcı bildirimi** ve **başlık ilerleme göstergesi**.
-  - **Log export** (.txt olarak).
-- **v1.1.0** (2026-05-17) — PDF modu eklendi.
-- **v1.0.0** (2026-05-17) — İlk sürüm. UDF formatında toplu indirme.
+### v2.3.7
+- Marka adı **Uyap Flow** (manifest, panel, bildirim, PDF üretici, PTT rozet, README).
+
+### v2.3.x (önceki özellikler)
+- UYAP ağaç klasör yolu ile kategorize; tarama **tekilleştirme**; PDF birleştirme; `pdf-lib`; komut paleti ve modern panel; sürüklenebilir FAB; PTT / seçim araç çubuğu / karar arama entegrasyonları.
+
+### v2.0 ve öncesi (özet)
+- ZIP, CSV, çoklu dosya kuyruğu, gelişmiş filtreler, seçim modu, önizleme, bildirim ve başlık ilerlemesi, log dışa aktarma; ilk sürümlerde UDF toplu indirme ve PDF modu.
+
+---
+
+*Açık kaynak inceleme: `extension/main.js`, `extension/manifest.json`, `extension/ptt-helper.js`.*
