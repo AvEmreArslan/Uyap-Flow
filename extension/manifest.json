@@ -2,10 +2,12 @@
   "manifest_version": 3,
   "name": "Uyap+ — Toplu Evrak İndirici",
   "short_name": "Uyap+",
-  "version": "2.1.0",
-  "description": "UYAP Avukat Portal için modern toplu evrak indirici. UDF/PDF, ZIP arşivi, Excel listesi, filtreler, çoklu dosya kuyruğu, seçim modu ve daha fazlası.",
+  "version": "2.2.0",
+  "description": "UYAP Avukat Portal için modern toplu evrak indirici. UDF/PDF, ZIP arşivi, Excel listesi, filtreler, çoklu dosya kuyruğu, seçim modu, PTT tebligat sorgulama ve daha fazlası.",
   "host_permissions": [
-    "https://avukat.uyap.gov.tr/*"
+    "https://avukat.uyap.gov.tr/*",
+    "https://gonderitakip.ptt.gov.tr/*",
+    "https://*.ptt.gov.tr/*"
   ],
   "action": {
     "default_title": "Uyap+ (sayfadaki yüzen butonu kullan)"
@@ -14,6 +16,16 @@
     {
       "matches": ["https://avukat.uyap.gov.tr/*"],
       "js": ["lib/jszip.min.js", "main.js"],
+      "run_at": "document_idle",
+      "world": "MAIN",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://gonderitakip.ptt.gov.tr/*",
+        "https://*.ptt.gov.tr/*"
+      ],
+      "js": ["ptt-helper.js"],
       "run_at": "document_idle",
       "world": "MAIN",
       "all_frames": false

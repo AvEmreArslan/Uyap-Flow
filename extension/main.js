@@ -542,6 +542,40 @@
     margin-top: 10px; display: flex; gap: 6px; justify-content: flex-end;
   }
 
+  /* ====== Selection Toolbar (PTT sorgulama) ====== */
+  .uyap-bulk-seltool {
+    position: fixed; z-index: 2147483647;
+    background: ${C.text}; color: #fff;
+    border-radius: 10px; padding: 4px;
+    display: inline-flex; align-items: center; gap: 2px;
+    box-shadow: 0 8px 24px -6px rgba(0,0,0,0.45),
+                0 2px 8px -2px rgba(0,0,0,0.3);
+    font-family: -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    opacity: 0; transform: translateY(4px) scale(.96);
+    transition: opacity .15s ease, transform .15s ease;
+    pointer-events: none; user-select: none;
+  }
+  .uyap-bulk-seltool.show {
+    opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+  }
+  .uyap-bulk-seltool button {
+    background: transparent; border: 0; color: #fff;
+    padding: 6px 10px; border-radius: 7px;
+    font: 600 12px -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+    transition: background .12s ease;
+  }
+  .uyap-bulk-seltool button:hover { background: rgba(255, 255, 255, 0.18); }
+  .uyap-bulk-seltool button.primary { background: ${C.accent}; }
+  .uyap-bulk-seltool button.primary:hover { background: ${C.accentSoft}; }
+  .uyap-bulk-seltool .sep { width: 1px; height: 18px; background: rgba(255,255,255,0.15); margin: 0 2px; }
+  .uyap-bulk-seltool .barcode {
+    background: rgba(255, 213, 79, 0.18); color: ${C.yellow};
+    padding: 2px 7px; border-radius: 5px; font: 11px ui-monospace, Consolas, monospace;
+    max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
   /* ====== Önizleme listesi: notlar göstergesi ====== */
   .uyap-bulk-list-item .note-mark {
     width: 26px; height: 26px; border-radius: 6px;
@@ -712,6 +746,8 @@
   let tooltipEl = null;
   let notePopEl = null;
   let paletteEl = null;
+  let selToolEl = null;
+  let selToolTimer = null;
 
   /* --- Persistent state ---- */
   function loadPersistedState() {
@@ -2041,6 +2077,10 @@
         UI.fab.style.left = ''; UI.fab.style.top = ''; UI.fab.style.right = ''; UI.fab.style.bottom = '';
         if (UI.panel && !UI.panel.hidden) repositionPanel();
       } },
+      { id: 'ptt-query', icon: '📮', title: 'PTT\'de Tebligat Sorgula', sub: 'Barkod girip yeni sekmede sorgu başlatır', action: () => {
+        const barcode = prompt('Tebligat barkod numarasını gir:');
+        if (barcode && barcode.trim()) openPttQuery(barcode.trim());
+      } },
     ];
 
     state.scanned.forEach((s, i) => {
@@ -2257,6 +2297,160 @@
     if (notePopEl) { notePopEl.remove(); notePopEl = null; }
   }
 
+  /* ============================== SELECTION TOOLBAR / PTT ============================== */
+  /**
+   * Bir metnin barkod olma ihtimalini kontrol eder.
+   * PTT barkodu çoğunlukla 13 haneli (eski "AA000000000TR" formatı veya 13 numerik)
+   * UYAP elektronik tebligat: alfanumerik 10-25 karakter, baş harf çoğunlukla harf.
+   */
+  function looksLikeBarcode(text) {
+    if (!text) return false;
+    const t = text.trim();
+    if (t.length < 8 || t.length > 30) return false;
+    if (/\s/.test(t)) return false; // boşluk içermemeli
+    // Sadece alfanumerik ve - karakterleri
+    if (!/^[A-Z0-9\-]+$/i.test(t)) return false;
+    // En az bir rakam içermeli
+    if (!/\d/.test(t)) return false;
+    return true;
+  }
+
+  function detectBarcode(text) {
+    if (!text) return null;
+    // Önce tüm metin tek barkod gibi mi
+    const stripped = text.trim();
+    if (looksLikeBarcode(stripped)) return stripped;
+    // Kelimelere ayır, en uzun barkod-benzeri kelimeyi al
+    const tokens = stripped.split(/[\s,;:|/]+/).filter(Boolean);
+    const candidates = tokens.filter(looksLikeBarcode).sort((a, b) => b.length - a.length);
+    return candidates[0] || null;
+  }
+
+  function openPttQuery(barcode) {
+    if (!barcode) return;
+    try { sessionStorage.setItem('uyap-bulk-barcode', barcode); } catch {}
+    const url = 'https://gonderitakip.ptt.gov.tr/#uyap-bulk-barcode=' + encodeURIComponent(barcode);
+    window.open(url, '_blank', 'noopener');
+  }
+
+  function copyToClipboard(text) {
+    try {
+      navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      try {
+        const ta = el('textarea', { style: 'position:fixed; left:-9999px;' });
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        return true;
+      } catch { return false; }
+    }
+  }
+
+  function searchInUyapKararArama(text) {
+    const q = encodeURIComponent(text);
+    window.open('https://karararama.uyap.gov.tr/Arama.aspx?q=' + q, '_blank', 'noopener');
+  }
+
+  function hideSelectionToolbar() {
+    if (selToolEl) { selToolEl.classList.remove('show'); }
+    if (selToolTimer) { clearTimeout(selToolTimer); selToolTimer = null; }
+  }
+
+  function showSelectionToolbar() {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) { hideSelectionToolbar(); return; }
+    const text = (sel.toString() || '').trim();
+    if (!text || text.length < 3) { hideSelectionToolbar(); return; }
+
+    // Bizim UI'mızdaysa seçim → toolbar gösterme
+    let node = sel.anchorNode;
+    while (node && node.nodeType !== 1) node = node.parentNode;
+    if (node?.closest?.('#uyap-bulk-root, .uyap-bulk-palette-backdrop, .uyap-bulk-note-pop, .uyap-bulk-tooltip')) {
+      hideSelectionToolbar(); return;
+    }
+
+    const range = sel.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    if (!rect.width && !rect.height) { hideSelectionToolbar(); return; }
+
+    const barcode = detectBarcode(text);
+
+    // Toolbar oluştur (yoksa)
+    if (!selToolEl) {
+      selToolEl = el('div', { class: 'uyap-bulk-seltool' });
+      document.body.appendChild(selToolEl);
+    }
+    selToolEl.innerHTML = '';
+
+    if (barcode) {
+      const pttBtn = el('button', { class: 'primary', title: 'PTT\'de tebligat sorgula' },
+        '🔎 PTT\'de Sorgula');
+      pttBtn.addEventListener('mousedown', (e) => e.preventDefault());
+      pttBtn.addEventListener('click', () => { openPttQuery(barcode); hideSelectionToolbar(); });
+      selToolEl.appendChild(pttBtn);
+
+      selToolEl.appendChild(el('span', { class: 'barcode', title: barcode }, barcode));
+      selToolEl.appendChild(el('span', { class: 'sep' }));
+    }
+
+    const copyBtn = el('button', { title: 'Panoya kopyala' }, '📋 Kopyala');
+    copyBtn.addEventListener('mousedown', (e) => e.preventDefault());
+    copyBtn.addEventListener('click', () => {
+      copyToClipboard(text);
+      copyBtn.innerHTML = '✓ Kopyalandı';
+      setTimeout(hideSelectionToolbar, 800);
+    });
+    selToolEl.appendChild(copyBtn);
+
+    if (text.length >= 3 && text.length <= 80 && !barcode) {
+      const kararBtn = el('button', { title: 'UYAP Karar Arama' }, '⚖ Karar Ara');
+      kararBtn.addEventListener('mousedown', (e) => e.preventDefault());
+      kararBtn.addEventListener('click', () => {
+        searchInUyapKararArama(text);
+        hideSelectionToolbar();
+      });
+      selToolEl.appendChild(kararBtn);
+    }
+
+    // Konumlandır: seçimin üst-orta noktası
+    document.body.appendChild(selToolEl);
+    requestAnimationFrame(() => {
+      const tw = selToolEl.offsetWidth, th = selToolEl.offsetHeight;
+      let left = rect.left + rect.width / 2 - tw / 2;
+      let top  = rect.top - th - 8;
+      if (top < 8) top = rect.bottom + 8;
+      if (left < 8) left = 8;
+      if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
+      selToolEl.style.left = left + 'px';
+      selToolEl.style.top  = top + 'px';
+      selToolEl.classList.add('show');
+    });
+  }
+
+  function setupSelectionToolbar() {
+    document.addEventListener('mouseup', (e) => {
+      // Eklentinin kendi UI'sındaysa atla
+      if (e.target?.closest?.('#uyap-bulk-root, .uyap-bulk-palette-backdrop, .uyap-bulk-note-pop, .uyap-bulk-tooltip, .uyap-bulk-seltool')) return;
+      if (selToolTimer) clearTimeout(selToolTimer);
+      selToolTimer = setTimeout(showSelectionToolbar, 200);
+    });
+    document.addEventListener('mousedown', (e) => {
+      if (selToolEl && !selToolEl.contains(e.target)) hideSelectionToolbar();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && selToolEl?.classList.contains('show')) hideSelectionToolbar();
+    });
+    document.addEventListener('selectionchange', () => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed) hideSelectionToolbar();
+    });
+    window.addEventListener('scroll', hideSelectionToolbar, true);
+  }
+
   /* ============================== KEYBOARD SHORTCUTS ============================== */
   function setupShortcuts() {
     document.addEventListener('keydown', (e) => {
@@ -2306,6 +2500,7 @@
       injectCSS();
       buildUI();
       setupShortcuts();
+      setupSelectionToolbar();
     } catch (e) {
       console.error('[UYAP Toplu İndirici] başlatma hatası:', e);
     }
