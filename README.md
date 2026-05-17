@@ -1,6 +1,6 @@
-# UYAP Toplu Evrak İndirici (v2.0)
+# Uyap Flow — Toplu Evrak İndirici
 
-UYAP Avukat Portal'da bir dosyadaki **tüm evrakları toplu olarak** indiren bir tarayıcı eklentisi. Chromium tabanlı tarayıcılar (Chrome, Edge, Brave, Opera) ile uyumludur.
+**Uyap Flow**, UYAP Avukat Portal'da bir dosyadaki **tüm evrakları toplu olarak** indiren bir tarayıcı eklentisidir. Chromium tabanlı tarayıcılar (Chrome, Edge, Brave, Opera) ile uyumludur.
 
 ## Özellikler — v2.0 ile Eklenenler
 
@@ -32,7 +32,7 @@ Hiçbir filtre seçilmezse **tüm evraklar** indirilir. Opsiyonel olarak:
 
 ### Bildirim ve İzleme
 - **Tarayıcı bildirimi** — İşlem tamamlandığında masaüstü bildirimi.
-- **Tarayıcı başlığında ilerleme** — Sekme başlığı `[25%] PDF yakalanıyor [12/50] — UYAP` gibi güncellenir; başka sekmedeyken bile durumu görebilirsin.
+- **Tarayıcı başlığında ilerleme** — Sekme başlığı `[25%] PDF yakalanıyor [12/50] — Uyap Flow` gibi güncellenir; başka sekmedeyken bile durumu görebilirsin.
 
 ### Diğer
 - Canlı log paneli (renkli, zaman damgalı).
@@ -61,7 +61,7 @@ C:\Users\avemr\OneDrive\Masaüstü\UYAP Toplu Dosya İndirme\extension
 ```
 
 ### Adım 4: Hazır
-Liste'de **"UYAP Toplu Evrak İndirici"** olarak görünecek.
+Liste'de **"Uyap Flow — Toplu Evrak İndirici"** olarak görünecek.
 
 ## İlk Kullanım Öncesi Tarayıcı Ayarı (ÖNEMLİ)
 
@@ -76,7 +76,7 @@ Bu ayarı kapatmazsan, ZIP olmayan modda her evrak için pencere açılır.
 
 ### Senaryo 1: Bir Dosyadaki Tüm Evrakları İndirme (Varsayılan)
 1. UYAP'a giriş yap → bir dosya aç → **Evrak** sekmesi.
-2. Sol alttaki **"Toplu İndir"** butonuna tıkla.
+2. Sol alttaki **Uyap Flow** yüzen butonuna tıkla.
 3. **"Genel Ayarlar"**'dan format seç (UDF veya PDF).
 4. (İsteğe bağlı) **"Çıktı Seçenekleri"** altında ZIP arşivi veya CSV listesi seçeneklerini ayarla.
 5. **"İndirmeyi Başlat"** butonuna bas.
@@ -93,7 +93,7 @@ Bu ayarı kapatmazsan, ZIP olmayan modda her evrak için pencere açılır.
 
 ### Senaryo 3: Birden Fazla Dosyadan Toplu İndirme
 1. **"Dosya Sorgula"** sayfasında müvekkillerini listele.
-2. **"Toplu İndir"** panelini aç.
+2. **Uyap Flow** panelini aç (sol alttaki yüzen buton).
 3. **"Gelişmiş"** → **"Çoklu dosya kuyruğu"** AÇ.
 4. **"+ Listedeki Tüm Dosyaları Ekle"** butonuna bas — tablodaki tüm dosyalar kuyruğa eklenir.
 5. **"İndirmeyi Başlat"** — eklenti her dosyayı sırayla açıp evraklarını indirir.

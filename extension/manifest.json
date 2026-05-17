@@ -1,16 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "Uyap+ — Toplu Evrak İndirici",
-  "short_name": "Uyap+",
-  "version": "2.3.6",
-  "description": "UYAP Avukat Portal için modern toplu evrak indirici. UDF/PDF, ZIP arşivi, PDF birleştirme, Excel listesi, filtreler, çoklu dosya kuyruğu, seçim modu, PTT tebligat sorgulama ve daha fazlası.",
+  "name": "Uyap Flow — Toplu Evrak İndirici",
+  "short_name": "Uyap Flow",
+  "version": "2.3.7",
+  "description": "Uyap Flow: UYAP Avukat Portal için toplu evrak indirici. UDF/PDF, ZIP arşivi, PDF birleştirme, Excel listesi, filtreler, çoklu dosya kuyruğu, seçim modu, PTT tebligat sorgulama ve daha fazlası.",
   "host_permissions": [
     "https://avukat.uyap.gov.tr/*",
     "https://gonderitakip.ptt.gov.tr/*",
     "https://*.ptt.gov.tr/*"
   ],
   "action": {
-    "default_title": "Uyap+ (sayfadaki yüzen butonu kullan)"
+    "default_title": "Uyap Flow (sayfadaki yüzen butonu)"
   },
   "content_scripts": [
     {

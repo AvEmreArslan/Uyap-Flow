@@ -1,5 +1,5 @@
 /* ============================================================================
- *  Uyap+ Toplu Evrak İndirici — main.js
+ *  Uyap Flow — Toplu Evrak İndirici — main.js
  *  https://avukat.uyap.gov.tr
  * ============================================================================ */
 
@@ -847,12 +847,12 @@
     if (document.getElementById('uyap-bulk-root')) return;
 
     /* ---- FAB ---- */
-    const fab = el('button', { class: 'uyap-bulk-fab uyap-bulk-fab--dock', title: 'Uyap+ — Toplu Evrak İndirici',
+    const fab = el('button', { class: 'uyap-bulk-fab uyap-bulk-fab--dock', title: 'Uyap Flow — Toplu Evrak İndirici',
       html:
         `<span class="uyap-bulk-fab-icon"><svg viewBox="0 0 24 24" aria-hidden="true">
            <path d="M12 3v10.55l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zm-7 16h14v2H5v-2z"/>
          </svg></span>
-         <span>Uyap<span class="uyap-bulk-fab-plus">+</span></span>` });
+         <span>Uyap<span class="uyap-bulk-fab-plus"> Flow</span></span>` });
 
     const panel = el('div', { class: 'uyap-bulk-panel uyap-bulk-panel--dock', hidden: true });
 
@@ -868,9 +868,9 @@
 
     const header = el('div', { class: 'uyap-bulk-header' },
       el('div', { style: 'min-width: 0; flex: 1;' },
-        el('h3', {}, el('span', { class: 'brand' }, 'Uyap'), el('span', { class: 'brand-plus' }, '+'),
-          el('span', { class: 'brand-sub' }, ' Toplu Evrak İndirici')),
-        el('span', { class: 'sub' }, 'v2.3.6 · Ctrl+K komut paleti')),
+        el('h3', {}, el('span', { class: 'brand' }, 'Uyap'), el('span', { class: 'brand-plus' }, ' Flow'),
+          el('span', { class: 'brand-sub' }, ' — Toplu Evrak İndirici')),
+        el('span', { class: 'sub' }, 'v2.3.7 · Ctrl+K komut paleti')),
       el('div', { class: 'uyap-bulk-header-actions' },
         UI.pinBtn,
         el('button', { class: 'uyap-bulk-close', title: 'Kapat (Esc)' }, '×')
@@ -1172,7 +1172,7 @@
     UI.progressBar.style.width = p + '%';
     if (label !== undefined) UI.progressLabel.textContent = label;
     if (UI.useTitleProg?.checked && label) {
-      document.title = `[${Math.round(p)}%] ${label} — UYAP`;
+      document.title = `[${Math.round(p)}%] ${label} — Uyap Flow`;
     }
   }
   function resetTitle() {
@@ -1708,7 +1708,7 @@
       notifyComplete(result);
     } catch (e) {
       log(`Beklenmedik hata: ${e?.message || e}`, 'err');
-      console.error('[UYAP Toplu İndirici]', e);
+      console.error('[Uyap Flow]', e);
     } finally {
       restoreNetworkHooks();
       setProgress(100, 'Tamamlandı');
@@ -1871,9 +1871,9 @@
 
     setProgress(99, 'PDF yazılıyor…');
     try {
-      mergedPdf.setTitle('UYAP Birlesik PDF — ' + getOpenDosyaInfo().raw);
-      mergedPdf.setCreator('Uyap+ Toplu Evrak İndirici');
-      mergedPdf.setProducer('pdf-lib + Uyap+');
+      mergedPdf.setTitle('Uyap Flow — Birleşik PDF — ' + getOpenDosyaInfo().raw);
+      mergedPdf.setCreator('Uyap Flow — Toplu Evrak İndirici');
+      mergedPdf.setProducer('pdf-lib + Uyap Flow');
       mergedPdf.setCreationDate(new Date());
     } catch {}
 
@@ -1893,7 +1893,7 @@
       const url = typeof input === 'string' ? input : input?.url;
       if (captureMode && url && url.includes('download_document_brd.uyap')) {
         captured.push(url);
-        return Promise.reject(new DOMException('Toplu İndirici tarafından yakalandı', 'AbortError'));
+        return Promise.reject(new DOMException('Uyap Flow tarafından yakalandı', 'AbortError'));
       }
       return ORIG.fetch(input, init);
     };
@@ -2130,8 +2130,8 @@
     if (!granted) return;
     try {
       const ok = result?.ok || 0, bad = result?.bad || 0;
-      const dosya = getOpenDosyaInfo().raw || 'UYAP';
-      new Notification('UYAP Toplu İndirici', {
+      const dosya = getOpenDosyaInfo().raw || 'Dava dosyası';
+      new Notification('Uyap Flow', {
         body: `${dosya}\nBaşarılı: ${ok}, Hatalı: ${bad}`,
         icon: 'https://avukat.uyap.gov.tr/favicon.ico',
         tag: 'uyap-bulk-done',
@@ -2714,7 +2714,7 @@
       setupShortcuts();
       setupSelectionToolbar();
     } catch (e) {
-      console.error('[UYAP Toplu İndirici] başlatma hatası:', e);
+      console.error('[Uyap Flow] başlatma hatası:', e);
     }
   }
 

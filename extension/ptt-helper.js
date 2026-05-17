@@ -1,5 +1,5 @@
 /* ============================================================================
- *  Uyap+ — PTT Helper (v2.2.0)
+ *  Uyap Flow — PTT Helper
  *  PTT tebligat sorgulama sayfasında barkodu otomatik doldurur ve sorgular.
  *  URL hash'ten okunur:  #uyap-bulk-barcode=<BARKOD>
  * ============================================================================ */
@@ -10,7 +10,7 @@
   if (window.__uyapPttHelperLoaded) return;
   window.__uyapPttHelperLoaded = true;
 
-  const LOG = (m, ...rest) => console.log('%c[Uyap+ PTT]%c ' + m,
+  const LOG = (m, ...rest) => console.log('%c[Uyap Flow PTT]%c ' + m,
     'background:#0b3d91;color:#fff;padding:2px 6px;border-radius:3px;font-weight:600',
     'color:#0b3d91;font-weight:500', ...rest);
 
@@ -106,7 +106,7 @@
     banner.id = 'uyap-ptt-banner';
     banner.innerHTML = `
       <div style="display:inline-flex; align-items:center; gap:10px;">
-        <span style="background:rgba(255,255,255,0.18); border-radius:6px; padding:3px 8px; font-weight:700; font-size:11px; letter-spacing:0.4px;">Uyap+</span>
+        <span style="background:rgba(255,255,255,0.18); border-radius:6px; padding:3px 8px; font-weight:700; font-size:11px; letter-spacing:0.4px;">Uyap Flow</span>
         <span>${message}</span>
       </div>
       <button id="uyap-ptt-banner-x" style="margin-left:auto; background:rgba(255,255,255,0.18); border:0; color:#fff; cursor:pointer; width:24px; height:24px; border-radius:6px; font-size:14px;">×</button>`;
